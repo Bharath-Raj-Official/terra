@@ -156,6 +156,7 @@ function drawTrees() {
 ///////////////////////////////////////////// GIVES MOTION TO CLOUDS //////////////////////////////////////////////////////////////
 
 function moveClouds(){
+    if(reducedTerrainMotion)return;
     for (let i = 0; i < clouds.length; i++) {
         clouds[i].pos_x += cloudSpeed;
 
@@ -330,6 +331,7 @@ function move(player, speed, direction) {
 
 
 function drawParticles() {
+    if(reducedTerrainMotion){particles=[];return;}
     for (let i = particles.length - 1; i >= 0; i--) {
         let p = particles[i];
         p.update();
@@ -352,7 +354,7 @@ function drawOrbs() {
             ellipse(orb.x_pos, orb.y_pos, 19, 19);
 
             // Emit particles continuously
-            for (let j = 0; j < 1; j++) {
+            for (let j = 0; j < (reducedTerrainMotion?0:1); j++) {
                 particles.push(new Particle(orb.x_pos, orb.y_pos));
             }
         }
@@ -927,7 +929,7 @@ function draw()
         ///////////////////////////////////////////// PLAYER ROTATION //////////////////////////////////////////////////////
 
         // Rotate player based on movement direction
-        if (player.velocity.x !== 0) {
+        if (!reducedTerrainMotion && player.velocity.x !== 0) {
             player.rotation += player.velocity.x * 2; // Adjust the rotation speed
         }
 
@@ -951,7 +953,7 @@ function draw()
         ///////////////////////////////////////////// PORTAL //////////////////////////////////////////////////////////////////////////
 
         // Rotate the portal clockwise
-        portalSprite.rotation += 1;
+        if(!reducedTerrainMotion)portalSprite.rotation += 1;
 
         ///////////////////////////////////////////// DEATH //////////////////////////////////////////////////////////////////////////
 

@@ -1,4 +1,5 @@
 let terrainPaused=false,terrainMuted=false;
+const reducedTerrainMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 function terrainReady(){document.getElementById('start').disabled=false;updateTerrainUI();}
 function playTerrainSound(sound){if(sound?.isLoaded())sound.play();}
 function startTerrainAudio(){userStartAudio();if(!terrainMuted&&backgroundMusic?.isLoaded()&&!backgroundMusic.isPlaying())backgroundMusic.loop();}
