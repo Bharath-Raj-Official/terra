@@ -262,7 +262,10 @@ p5.prototype._updateNextTouchCoords = function(e) {
   this._setProperty('touchY', y);
   if (!this._hasTouchInteracted) {
     // For first draw, make previous and next equal
-    this._updateTouchCoords();
+    // Upstream p5 0.5.11 expects a TouchEvent here; mouse events have no touches.
+    // The scaled coordinates above are already populated.
+    this._setProperty('ptouchX', x);
+    this._setProperty('ptouchY', y);
     this._setProperty('_hasTouchInteracted', true);
   }
 };
@@ -339,7 +342,7 @@ p5.prototype._updateNextMouseCoords = function(e) {
   this._setProperty('winMouseY', e.pageY);
   if (!this._hasMouseInteracted) {
     // For first draw, make previous and next equal
-    this._updateMouseCoords();
+    this._updateMouseCoords(e);
     this._setProperty('_hasMouseInteracted', true);
   }
 };
@@ -1446,7 +1449,12 @@ function Sprite(pInst, _x, _y, _w, _h) {
   var pop = pInstBind('pop');
   var colorMode = pInstBind('colorMode');
   var tint = pInstBind('tint');
-  var alphaTint = pInstBind('alphaTint');
+  // Compatibility with upstream p5.js: Code.org's alphaTint is not present.
+  var alphaTint = typeof pInst.alphaTint === 'function' ? pInstBind('alphaTint') : function(alpha) {
+    var previous = pInst._renderer._tint;
+    tint(previous ? previous[0] : 255, previous ? previous[1] : 255,
+         previous ? previous[2] : 255, (previous ? previous[3] : 255) * alpha);
+  };
   var lerpColor = pInstBind('lerpColor');
   var noStroke = pInstBind('noStroke');
   var rectMode = pInstBind('rectMode');

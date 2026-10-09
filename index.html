@@ -1,14 +1,1 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.8.0/p5.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.8.0/addons/p5.sound.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/molleindustria/p5.play/lib/p5.play.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <meta charset="utf-8" />
-  </head>
-  <body>
-    <main></main>
-    <script src="sketch.js"></script>
-  </body>
-</html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Terra — find your way home</title><link rel="stylesheet" href="game.css"><script src="p5.min.js"></script><script src="p5.sound.min.js"></script><script src="p5.play.js"></script><script src="interface.js"></script><script src="sketch.js"></script></head><body><header><a href="index.html">Terra</a><a href="https://github.com/Bharath-Raj-Official/terra">Source code</a></header><main><div class="intro"><h1>Find your way home.</h1><p>Five orbs. One portal. A world that won't stand still.</p></div><section class="game"><div class="hud"><span id="orbs">Orbs 0 / 5</span><span id="lives">Lives 3</span><div><button id="pause">Pause</button><button id="mute">Mute</button><button id="fullscreen">Fullscreen</button></div></div><div class="stage"><div id="game-host"></div><div id="overlay"><h2 id="screen-title">Loading Terra…</h2><p id="screen-copy">Preparing the landscape and sound.</p><button id="start" disabled>Start adventure</button></div></div><div class="touch"><button data-action="left" aria-label="Move left">Left</button><button data-action="stop">Stop</button><button data-action="right" aria-label="Move right">Right</button><button data-action="jump">Jump</button></div></section><details><summary>Controls and objective</summary><p>Collect all five orbs to open the gate and reach the portal. A / D move left and right; S stops; Space jumps; P pauses; Enter starts or restarts. Avoid ghosts and watch the collapsing bridge. The buttons below the game also work on touch screens.</p></details></main><footer>JavaScript · p5.js / p5.play · Built by Bharath Raj</footer></body></html>

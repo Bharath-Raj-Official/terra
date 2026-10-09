@@ -45,7 +45,7 @@ let remainingJumps = maxJumps;
 let onGround = false;
 let orbCount = 0;
 let cameraPosX = 0;
-let playerLives = 0; //player life
+let playerLives = 3; //player life
 let heartSprites = []; 
 let extraLives = [];
 let gameState = "playing"; // "playing" or "gameover"
@@ -287,9 +287,12 @@ function checkCollision(obj, x, y, width, height) {
 ///////////////////////////////////////////// PLAYER MOVEMENT + KEY BINDING ///////////////////////////////////////////////////////////////////
 
 function keyPressed() {
+    if (/INPUT|SELECT|BUTTON|TEXTAREA/.test(document.activeElement?.tagName)) return;
+    if(keyCode===80){toggleTerrainPause();return false;}
+    if(terrainPaused)return false;
     if (keyCode === ENTER && startupScreenActive) {
-        startupScreenActive = false; // Deactivate the startup screen
-    } else if (keyCode === 32) { // spacebar
+        startTerrain(); // Intentional gesture unlocks audio
+    } else if (keyCode === 32 && gameState === "playing" && !levelComplete) { // spacebar
         // allow jumping only if there are remaining jumps or on ground
         if (onGround || remainingJumps > 0) {
             jump(player);
@@ -298,7 +301,7 @@ function keyPressed() {
             }
         }
     } else if (keyCode === 13) {
-        if (gameState === "gameover") {
+        if (gameState === "gameover" || levelComplete) {
             resetGame();
         }
     } else if (keyCode === 83) { // S to stop moving
@@ -312,6 +315,10 @@ function keyPressed() {
 
 function jump(player) {
     player.velocity.y = hop+3;   
+}
+
+function keyReleased() {
+    if (player && (keyCode===65 || keyCode===68 || keyCode===83)) player.velocity.x=0;
 }
 
 function move(player, speed, direction) {
@@ -380,7 +387,7 @@ function checkIfGameCharInOrbRange() {
             if (d < 30 && !orb.isFound) {
                 orb.isFound = true;
                 orbCount++;
-                orbSound.play(); // Play the orb pickup sound
+                playTerrainSound(orbSound); // Play the orb pickup sound
             }
         }
     }
@@ -389,6 +396,8 @@ function checkIfGameCharInOrbRange() {
 ///////////////////////////////////////////// LIFE SYSTEM ///////////////////////////////////////////////////////////////////////
 
 function initializeHearts() {
+    heartSprites.forEach(h=>h.remove());
+    heartSprites=[];
     for (let i = 0; i < playerLives; i++) {
         let heart = createSprite(10 + i * 15, 15, 20, 20); // position 
         heart.draw = function () {
@@ -409,43 +418,28 @@ function drawHeart(x, y, size) {
 
 function removeLife() {
     playerLives--;
-    if (playerLives == -1) {
+    if (playerLives <= 0) {
         gameState = "gameover";
-        gameOverSound.play();
+        playTerrainSound(gameOverSound);
         backgroundMusic.stop();
     } else {
         if (heartSprites.length > 0) {
             let heart = heartSprites.pop();
             heart.remove();
-            deathSound.play();
+            playTerrainSound(deathSound);
         }
     }
 }
 
 
 function resetGame() {
-    playerLives = 0;
-    orbCount = 0; // Reset orb count
-    gameState = "playing";
-    player.position.x = 70;
-    player.position.y = height - 210;
-    player.velocity.y = 0;
-
-    // Reset orbs
-    for (let i = 0; i < orbs.length; i++) {
-        orbs[i].isFound = false;
-    }
-
-    // Reset extra life collectables
-    for (let i = 0; i < extraLives.length; i++) {
-        extraLives[i].isFound = false;
-    }
-
-    // Reset traps
-    for (let i = 0; i < traps.length; i++) {
-        traps[i].timer = 25; // Reset trap timer
-        trap.collapsed = false; 
-    }
+    allSprites.removeSprites();
+    bottoms=[];orbs=[];clouds=[];trees=[];grounds=[];mountain1=[];mountain2=[];
+    heartSprites=[];extraLives=[];particles=[];ghosts=[];traps=[];
+    playerLives=3;orbCount=0;cameraPosX=0;remainingJumps=maxJumps;
+    risingPlatformY=232;risingPlatformDirection=1;levelComplete=false;gameState="playing";
+    initGame();startupScreenActive=false;terrainPaused=false;
+    startTerrainAudio();updateTerrainUI();
 }
 
 
@@ -468,7 +462,7 @@ function checkIfGameCharInExtraLifeRange() {
                 extraLife.isFound = true;
                 playerLives++; // Increase player lives
                 initializeHearts(); // Update heart sprites
-                restoreHealthSound.play();
+                playTerrainSound(restoreHealthSound);
 
             }
         }
@@ -795,13 +789,22 @@ function initGame(){
 
 function setup()
 {
-    createCanvas(1024, 576);
-    backgroundMusic.loop();
+    createCanvas(1024, 576).parent('game-host');
     initGame();
+    terrainReady();
 }
 
 function draw()
 {  
+    updateTerrainUI();
+    if(terrainPaused || startupScreenActive) {
+        background(24,21,45);
+        drawGBG();
+        drawMountain1();
+        drawMountain2();
+        return;
+    }
+    if (gameState === "gameover" || levelComplete) { return; }
     if (startupScreenActive) {
         displayStartupScreen();
     } else {
@@ -911,13 +914,6 @@ function draw()
         ///////////////////////////////////////////// JUMP + GRAVITY //////////////////////////////////////////////////////////////////
 
         // allow jumping only if there are remaining jumps or on ground
-        if(keyIsDown(32) && (onGround || remainingJumps > 0)){
-            jump(player);
-            if (!onGround){ 
-                remainingJumps --; //decrement remainingJumps only if not on ground
-            }
-        }
-
         player.velocity.y += gravity;
 
 
@@ -939,7 +935,7 @@ function draw()
 
         if (levelComplete) {
             displayCompletionScreen();
-            heart.remove();
+            heartSprites.forEach(h=>h.remove());
         } else {
             updatePortal();
             
@@ -987,3 +983,4 @@ function draw()
 
     }
 }
+
