@@ -38,6 +38,11 @@ One level; desktop-first movement. Automated completion checks force state trans
 
 ## Validation
 
+The player uses the supplied original 50 × 50 world-unit size. Drawing dimensions
+and the rectangular collider are explicit, so a full-size or late-loaded bitmap
+cannot enlarge the character. Browser checks cover launch, restart, resizing,
+late bitmap replacement and device pixel ratios 1 and 2.
+
 Edge checks cover launch, freezing sprite positions during pause, game-over/completion screens, restart with three lives and five orbs, mute and phone layout. Source audio buffers loaded successfully. Hardware listening and a complete human playthrough remain.
 
 ## Third-party attribution

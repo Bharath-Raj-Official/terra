@@ -615,8 +615,15 @@ function initGame(){
     ///////////////////////////////////////////// PLAYER + GHOST CREATION ////////////////////////////////////////////////////////////////
 
     player = createSprite(90, height - 210, playerx, playery);
-    playerImage.resize(50, 50);
-    player.addImage(playerImage);
+    // Keep the original 50x50 world footprint independent of the image's
+    // intrinsic dimensions, load timing, pixel density, and sprite animation.
+    player.setCollider('rectangle', 0, 0, playerx, playery);
+    player.draw = function () {
+        push();
+        imageMode(CENTER);
+        image(playerImage, 0, 0, playerx, playery);
+        pop();
+    };
     player.maxSpeed = 10;
 
     // Create Ghost instances with constraints
