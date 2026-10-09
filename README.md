@@ -6,7 +6,7 @@ A small platform game explores a moving landscape, collectible orbs and a gated 
 
 ## Demo
 
-Local preview works with the setup below. GitHub Pages publication is pending destination authentication; a live URL will be added after verification.
+[Open the live demo](https://bharath-raj-official.github.io/terra/). Local setup is also available below.
 
 ## What it does
 
